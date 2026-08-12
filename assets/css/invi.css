@@ -1,0 +1,867 @@
+/* =========================================================
+   INVI - Asistente virtual de AGS:EI / INVESTEL
+   ========================================================= */
+
+:root {
+  --invi-primary: #0d6efd;
+  --invi-primary-dark: #084298;
+  --invi-primary-light: #eff6ff;
+  --invi-surface: #ffffff;
+  --invi-background: #f8fafc;
+  --invi-text: #1f2937;
+  --invi-muted: #6b7280;
+  --invi-border: #e5e7eb;
+  --invi-success: #22c55e;
+  --invi-danger: #dc2626;
+  --invi-shadow: rgba(15, 23, 42, 0.18);
+}
+
+/* =========================================================
+   CONFIGURACIÓN GENERAL
+   ========================================================= */
+
+.invi-widget,
+.invi-widget * {
+  box-sizing: border-box;
+}
+
+.invi-widget {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 9998;
+  font-family: "Inter", "Roboto", Arial, sans-serif;
+}
+
+/* =========================================================
+   BOTÓN FLOTANTE DEL AVATAR
+   ========================================================= */
+
+.invi-launcher {
+  position: relative;
+  width: 94px;
+  height: 94px;
+  padding: 0;
+  border: 4px solid rgba(255, 255, 255, 0.95);
+  border-radius: 50%;
+  background: var(--invi-surface);
+  box-shadow: 0 14px 35px rgba(13, 110, 253, 0.28);
+  cursor: pointer;
+  overflow: hidden;
+  animation: invi-float 3.2s ease-in-out infinite;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.invi-launcher:hover {
+  transform: translateY(-4px) scale(1.06);
+  box-shadow: 0 18px 42px rgba(13, 110, 253, 0.38);
+}
+
+.invi-launcher:active {
+  transform: scale(0.97);
+}
+
+.invi-launcher img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Punto de estado activo */
+
+.invi-status-dot {
+  position: absolute;
+  right: 4px;
+  bottom: 5px;
+  width: 18px;
+  height: 18px;
+  border: 3px solid white;
+  border-radius: 50%;
+  background: var(--invi-success);
+  box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.5);
+  animation: invi-status-pulse 2.2s infinite;
+}
+
+/* =========================================================
+   MENSAJE FLOTANTE
+   ========================================================= */
+
+.invi-tooltip {
+  position: absolute;
+  right: 108px;
+  bottom: 27px;
+  width: max-content;
+  max-width: 220px;
+  padding: 10px 14px;
+  border: 1px solid var(--invi-border);
+  border-radius: 12px;
+  color: var(--invi-text);
+  background: white;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.16);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+  pointer-events: none;
+  opacity: 1;
+  transform: translateX(0);
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+}
+
+.invi-tooltip::after {
+  content: "";
+  position: absolute;
+  right: -7px;
+  top: 50%;
+  width: 14px;
+  height: 14px;
+  border-top: 1px solid var(--invi-border);
+  border-right: 1px solid var(--invi-border);
+  background: white;
+  transform: translateY(-50%) rotate(45deg);
+}
+
+.invi-widget.is-open .invi-tooltip {
+  opacity: 0;
+  transform: translateX(8px);
+}
+
+/* =========================================================
+   VENTANA DE CHAT
+   ========================================================= */
+
+.invi-chat {
+  position: absolute;
+  right: 0;
+  bottom: 116px;
+  width: min(390px, calc(100vw - 32px));
+  height: min(590px, calc(100vh - 160px));
+  min-height: 460px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid rgba(229, 231, 235, 0.95);
+  border-radius: 22px;
+  background: var(--invi-surface);
+  box-shadow: 0 24px 65px rgba(15, 23, 42, 0.24);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(18px) scale(0.96);
+  transform-origin: bottom right;
+  transition:
+    opacity 0.22s ease,
+    transform 0.22s ease,
+    visibility 0.22s;
+}
+
+.invi-widget.is-open .invi-chat {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateY(0) scale(1);
+}
+
+/* =========================================================
+   ENCABEZADO
+   ========================================================= */
+
+.invi-header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 18px;
+  color: white;
+  background: linear-gradient(
+    135deg,
+    var(--invi-primary-dark),
+    var(--invi-primary)
+  );
+}
+
+.invi-header-avatar {
+  width: 48px;
+  height: 48px;
+  flex: 0 0 auto;
+  object-fit: cover;
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  background: white;
+}
+
+.invi-header-copy {
+  min-width: 0;
+  flex: 1;
+}
+
+.invi-header-copy strong {
+  display: block;
+  overflow: hidden;
+  font-size: 17px;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.invi-header-copy span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 12px;
+}
+
+.invi-header-copy span::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: #4ade80;
+}
+
+/* Botón limpiar conversación */
+
+.invi-clear,
+.invi-close {
+  width: 36px;
+  height: 36px;
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 50%;
+  color: white;
+  background: rgba(255, 255, 255, 0.14);
+  cursor: pointer;
+  line-height: 1;
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.invi-clear {
+  font-size: 20px;
+}
+
+.invi-close {
+  font-size: 24px;
+}
+
+.invi-clear:hover,
+.invi-close:hover {
+  background: rgba(255, 255, 255, 0.24);
+  transform: scale(1.06);
+}
+
+.invi-clear:active,
+.invi-close:active {
+  transform: scale(0.94);
+}
+
+/* =========================================================
+   ÁREA DE MENSAJES
+   ========================================================= */
+
+.invi-messages {
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 18px;
+  background: var(--invi-background);
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+.invi-messages::-webkit-scrollbar {
+  width: 7px;
+}
+
+.invi-messages::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.invi-messages::-webkit-scrollbar-thumb {
+  border-radius: 20px;
+  background: #cbd5e1;
+}
+
+.invi-message {
+  max-width: 86%;
+  margin-bottom: 12px;
+  padding: 11px 14px;
+  border-radius: 16px;
+  font-size: 14px;
+  line-height: 1.48;
+  overflow-wrap: anywhere;
+  white-space: pre-line;
+  animation: invi-message-enter 0.2s ease;
+}
+
+.invi-message.bot {
+  margin-right: auto;
+  border-bottom-left-radius: 5px;
+  color: var(--invi-text);
+  background: white;
+  box-shadow: 0 5px 18px rgba(15, 23, 42, 0.07);
+}
+
+.invi-message.user {
+  margin-left: auto;
+  border-bottom-right-radius: 5px;
+  color: white;
+  background: linear-gradient(
+    135deg,
+    var(--invi-primary),
+    #2563eb
+  );
+  box-shadow: 0 5px 15px rgba(13, 110, 253, 0.18);
+}
+
+/* =========================================================
+   INDICADOR DE ESCRITURA
+   ========================================================= */
+
+.invi-typing {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  color: var(--invi-muted);
+}
+
+.invi-typing-label {
+  font-size: 12px;
+}
+
+.invi-typing-dots {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.invi-typing-dots span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--invi-primary);
+  animation: invi-dot 1.15s ease-in-out infinite;
+}
+
+.invi-typing-dots span:nth-child(2) {
+  animation-delay: 0.14s;
+}
+
+.invi-typing-dots span:nth-child(3) {
+  animation-delay: 0.28s;
+}
+
+/* =========================================================
+   ACCIONES RÁPIDAS
+   ========================================================= */
+
+.invi-quick-actions {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 0 14px 12px;
+  background: var(--invi-background);
+  scrollbar-width: none;
+}
+
+.invi-quick-actions::-webkit-scrollbar {
+  display: none;
+}
+
+.invi-quick-action {
+  flex: 0 0 auto;
+  padding: 8px 11px;
+  border: 1px solid #bfdbfe;
+  border-radius: 999px;
+  color: var(--invi-primary-dark);
+  background: var(--invi-primary-light);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  transition:
+    background 0.18s ease,
+    transform 0.18s ease,
+    border-color 0.18s ease;
+}
+
+.invi-quick-action:hover {
+  border-color: #93c5fd;
+  background: #dbeafe;
+  transform: translateY(-1px);
+}
+
+.invi-quick-action:active {
+  transform: translateY(0);
+}
+
+/* =========================================================
+   FORMULARIO
+   ========================================================= */
+
+.invi-form {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  padding: 13px;
+  border-top: 1px solid var(--invi-border);
+  background: white;
+}
+
+.invi-input {
+  min-width: 0;
+  min-height: 42px;
+  max-height: 110px;
+  flex: 1;
+  resize: none;
+  overflow-y: auto;
+  padding: 11px 13px;
+  border: 1px solid #d1d5db;
+  border-radius: 12px;
+  color: var(--invi-text);
+  background: white;
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.4;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.invi-input::placeholder {
+  color: #9ca3af;
+}
+
+.invi-input:focus {
+  border-color: var(--invi-primary);
+  box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.11);
+  outline: none;
+}
+
+.invi-send {
+  width: 42px;
+  height: 42px;
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 12px;
+  color: white;
+  background: var(--invi-primary);
+  cursor: pointer;
+  font-size: 18px;
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.invi-send:hover {
+  background: var(--invi-primary-dark);
+  box-shadow: 0 6px 16px rgba(13, 110, 253, 0.25);
+  transform: translateY(-1px);
+}
+
+.invi-send:active {
+  transform: translateY(0);
+}
+
+.invi-send:disabled,
+.invi-input:disabled {
+  cursor: not-allowed;
+  opacity: 0.62;
+}
+
+/* =========================================================
+   ESTADOS DEL WIDGET
+   ========================================================= */
+
+.invi-widget.is-thinking .invi-header-avatar,
+.invi-widget.is-thinking .invi-launcher img {
+  animation: invi-think 1.1s ease-in-out infinite;
+}
+
+.invi-widget.is-local-response .invi-chat {
+  box-shadow:
+    0 24px 65px rgba(15, 23, 42, 0.24),
+    0 0 0 3px rgba(245, 158, 11, 0.16);
+}
+
+/* =========================================================
+   RESALTADO DE SECCIONES
+   ========================================================= */
+
+.invi-highlight {
+  position: relative;
+  animation: invi-section-highlight 1.8s ease;
+}
+
+/* =========================================================
+   ACCESIBILIDAD
+   ========================================================= */
+
+.invi-launcher:focus-visible,
+.invi-clear:focus-visible,
+.invi-close:focus-visible,
+.invi-send:focus-visible,
+.invi-quick-action:focus-visible,
+.invi-input:focus-visible {
+  outline: 3px solid rgba(13, 110, 253, 0.3);
+  outline-offset: 3px;
+}
+
+/* =========================================================
+   ANIMACIONES
+   ========================================================= */
+
+@keyframes invi-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-9px);
+  }
+}
+
+@keyframes invi-status-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.45);
+  }
+
+  70% {
+    box-shadow: 0 0 0 8px rgba(34, 197, 94, 0);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
+  }
+}
+
+@keyframes invi-message-enter {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes invi-dot {
+  0%,
+  60%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.38;
+  }
+
+  30% {
+    transform: translateY(-4px);
+    opacity: 1;
+  }
+}
+
+@keyframes invi-think {
+  0%,
+  100% {
+    transform: rotate(0deg) scale(1);
+  }
+
+  50% {
+    transform: rotate(-2deg) scale(1.025);
+  }
+}
+
+@keyframes invi-section-highlight {
+  0% {
+    box-shadow: 0 0 0 0 rgba(13, 110, 253, 0);
+  }
+
+  30% {
+    box-shadow: 0 0 0 7px rgba(13, 110, 253, 0.2);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(13, 110, 253, 0);
+  }
+}
+
+/* =========================================================
+   DISEÑO RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 575px) {
+  .invi-widget {
+    right: 14px;
+    bottom: 14px;
+  }
+
+  .invi-launcher {
+    width: 78px;
+    height: 78px;
+  }
+
+  .invi-status-dot {
+    width: 16px;
+    height: 16px;
+  }
+
+  .invi-tooltip {
+    display: none;
+  }
+
+  .invi-chat {
+    position: fixed;
+    right: 10px;
+    bottom: 104px;
+    left: 10px;
+    width: auto;
+    height: min(590px, calc(100vh - 124px));
+    min-height: 420px;
+    border-radius: 18px;
+  }
+
+  .invi-header {
+    padding: 14px;
+  }
+
+  .invi-header-avatar {
+    width: 44px;
+    height: 44px;
+  }
+
+  .invi-messages {
+    padding: 14px;
+  }
+
+  .invi-message {
+    max-width: 90%;
+    font-size: 13.5px;
+  }
+
+  .invi-form {
+    padding: 10px;
+  }
+
+  .invi-input {
+    font-size: 16px;
+  }
+}
+
+@media (max-height: 650px) and (min-width: 576px) {
+  .invi-chat {
+    height: calc(100vh - 140px);
+    min-height: 380px;
+  }
+}
+
+/* =========================================================
+   MOVIMIENTO REDUCIDO
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .invi-launcher,
+  .invi-status-dot,
+  .invi-typing-dots span,
+  .invi-widget.is-thinking .invi-header-avatar,
+  .invi-widget.is-thinking .invi-launcher img,
+  .invi-message,
+  .invi-highlight {
+    animation: none;
+  }
+
+  .invi-chat,
+  .invi-tooltip,
+  .invi-launcher,
+  .invi-send,
+  .invi-quick-action,
+  .invi-clear,
+  .invi-close {
+    transition: none;
+  }
+
+  .invi-messages {
+    scroll-behavior: auto;
+  }
+}
+/* =========================================================
+   INVI - MODO OSCURO AUTOMÁTICO
+   ========================================================= */
+
+@media (prefers-color-scheme: dark) {
+
+  :root {
+    --invi-surface: #111827;
+    --invi-background: #0f172a;
+    --invi-text: #f3f4f6;
+    --invi-muted: #9ca3af;
+    --invi-border: #374151;
+  }
+
+  .invi-chat {
+    background: #111827;
+    border-color: #374151;
+    box-shadow: 0 24px 65px rgba(0, 0, 0, .5);
+  }
+
+  .invi-messages {
+    background: #0f172a;
+  }
+
+  .invi-message.bot {
+    color: #f3f4f6;
+    background: #1f2937;
+    box-shadow: 0 5px 18px rgba(0, 0, 0, .25);
+  }
+
+  .invi-message.user {
+    color: white;
+  }
+
+  .invi-quick-actions {
+    background: #0f172a;
+  }
+
+  .invi-quick-action {
+    color: #bfdbfe;
+    background: #1e293b;
+    border-color: #334155;
+  }
+
+  .invi-quick-action:hover {
+    background: #334155;
+  }
+
+  .invi-form {
+    background: #111827;
+    border-color: #374151;
+  }
+
+  .invi-input {
+    color: #f3f4f6;
+    background: #1f2937;
+    border-color: #4b5563;
+  }
+
+  .invi-input::placeholder {
+    color: #9ca3af;
+  }
+
+  .invi-input:focus {
+    border-color: #60a5fa;
+    box-shadow: 0 0 0 3px rgba(96, 165, 250, .15);
+  }
+
+  .invi-tooltip {
+    color: #f3f4f6;
+    background: #1f2937;
+    border-color: #374151;
+  }
+
+  .invi-tooltip::after {
+    background: #1f2937;
+    border-color: #374151;
+  }
+
+  .invi-launcher {
+    background: #111827;
+    border-color: #374151;
+  }
+}
+
+
+/* =========================================================
+   INVI - CHAT EXPANDIDO
+   ========================================================= */
+
+.invi-expand {
+  width: 36px;
+  height: 36px;
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 50%;
+  color: white;
+  background: rgba(255, 255, 255, .14);
+  cursor: pointer;
+  font-size: 18px;
+  transition: background .2s ease, transform .2s ease;
+}
+
+.invi-expand:hover {
+  background: rgba(255, 255, 255, .24);
+  transform: scale(1.06);
+}
+
+.invi-widget.is-expanded .invi-chat {
+  position: fixed;
+  width: min(850px, calc(100vw - 60px));
+  height: min(760px, calc(100vh - 60px));
+  min-height: 0;
+
+  top: 50%;
+  left: 50%;
+  right: auto;
+  bottom: auto;
+
+  transform: translate(-50%, -50%) scale(1);
+  transform-origin: center;
+
+  border-radius: 24px;
+  z-index: 10001;
+}
+
+.invi-widget.is-expanded::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, .50);
+  backdrop-filter: blur(4px);
+  z-index: 9999;
+}
+
+.invi-widget.is-expanded .invi-chat {
+  z-index: 10000;
+}
+
+.invi-widget.is-expanded .invi-launcher,
+.invi-widget.is-expanded .invi-tooltip {
+  opacity: 0;
+  pointer-events: none;
+}
+
+@media (max-width: 700px) {
+
+  .invi-widget.is-expanded .invi-chat {
+    top: 10px;
+    right: 10px;
+    bottom: 10px;
+    left: 10px;
+
+    width: auto;
+    height: auto;
+
+    transform: none;
+    border-radius: 18px;
+  }
+}
