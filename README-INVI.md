@@ -364,3 +364,79 @@ Avatar INVI
 El frontend permite la interacción con el usuario, el backend administra la
 comunicación con la inteligencia artificial y Gemini procesa las consultas
 para generar las respuestas que posteriormente se muestran dentro de INVI.
+# Clonar y ejecutar el proyecto
+
+El proyecto puede descargarse o clonarse desde su repositorio de GitHub.
+
+## Clonar el repositorio
+
+Ejecuta:
+
+    git clone https://github.com/omarLEsparza11/INVI-Asistente-Virtual.git
+
+Después entra a la carpeta:
+
+    cd INVI-Asistente-Virtual
+
+## Instalar dependencias
+
+Las dependencias de Node.js no se incluyen directamente en el repositorio.
+
+Para instalarlas ejecuta:
+
+    npm install
+
+En Windows también puede utilizarse:
+
+    npm.cmd install
+
+## Configurar Gemini
+
+Por seguridad, el archivo `.env` que contiene la clave de la API no se
+incluye en el repositorio.
+
+Utiliza `.env.example` como referencia y crea un archivo llamado:
+
+    .env
+
+Después configura tu propia clave de Gemini:
+
+    GEMINI_API_KEY=TU_CLAVE_DE_GEMINI
+
+También debe configurarse el modelo correspondiente si se encuentra definido
+en `.env.example`.
+
+IMPORTANTE: nunca publiques ni compartas tu archivo `.env` si contiene una
+clave de API real.
+
+## Iniciar el proyecto
+
+Una vez instaladas las dependencias y configurado `.env`, ejecuta:
+
+    npm start
+
+En Windows también puede utilizarse:
+
+    npm.cmd start
+
+Si el servidor inicia correctamente aparecerá un mensaje similar a:
+
+    INVI disponible en http://localhost:3000
+
+Finalmente abre en el navegador:
+
+    http://localhost:3000
+
+## Uso sin Gemini
+
+La interfaz de INVI y las respuestas locales pueden probarse sin proporcionar
+una clave de Gemini.
+
+Sin embargo, para utilizar las respuestas generadas mediante inteligencia
+artificial es necesario configurar una clave válida en el archivo `.env`.
+
+## Repositorio
+
+Código fuente del proyecto:
+
+https://github.com/omarLEsparza11/INVI-Asistente-Virtual
